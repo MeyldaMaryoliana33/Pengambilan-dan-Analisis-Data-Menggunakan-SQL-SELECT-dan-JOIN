@@ -1,0 +1,32 @@
+## JOIN
+JOIN dipakai untuk menggabungkan data dari dua tabel atau lebih yang saling berhubungan. Data tidak dipindahkan, hanya ditampilkan bersama.
+Contohnya tabel mahasiswa hanya menyimpan kode_prodi, sedangkan nama program studinya ada di tabel program_studi. Supaya keduanya tampil dalam satu hasil, dua tabel itu digabung dengan JOIN lewat kolom yang berhubungan (foreign key di satu tabel dengan primary key di tabel lain).
+
+Kolom penghubung pada database ini:
+- mahasiswa.kode_prodi = program_studi.kode_prodi
+- kelas_kuliah.kode_mk = mata_kuliah.kode_mk
+- kelas_kuliah.kode_induk_dosen = dosen.kode_induk_dosen
+- krs.nim = mahasiswa.nim
+- krs.kode_mk = mata_kuliah.kode_mk
+
+
+### INNER JOIN
+Hanya menampilkan baris yang punya pasangan di kedua tabel. Baris yang tidak punya pasangan tidak ikut tampil.
+    SELECT m.nim, m.nama_mahasiswa, p.nama_prodi
+    FROM mahasiswa AS m
+    INNER JOIN program_studi AS p
+      ON m.kode_prodi = p.kode_prodi;
+
+
+### LEFT JOIN
+Menampilkan semua baris dari tabel kiri (tabel yang ditulis setelah FROM), termasuk yang belum punya pasangan. Kolom dari tabel kanan akan berisi NULL kalau tidak ada pasangannya.
+    SELECT p.kode_prodi, p.nama_prodi, m.nama_mahasiswa
+    FROM program_studi AS p
+    LEFT JOIN mahasiswa AS m
+      ON p.kode_prodi = m.kode_prodi;
+
+
+### Perbedaannya
+INNER JOIN dipakai kalau yang dibutuhkan hanya data yang berpasangan, misalnya daftar KRS beserta nama mahasiswa dan mata kuliahnya. LEFT JOIN dipakai kalau semua data tabel kiri harus tetap muncul, misalnya untuk mencari program studi yang belum punya mahasiswa (tambahkan WHERE m.nim IS NULL).
+Urutan tabel di LEFT JOIN berpengaruh. FROM kelas LEFT JOIN siswa berbeda hasilnya dengan FROM siswa LEFT JOIN kelas, karena tabel yang ditulis pertama yang semua barisnya dipertahankan.
+Setiap JOIN butuh kondisi ON yang benar. Kolom yang dihubungkan harus memang berelasi, bukan sekadar tipe datanya sama.
