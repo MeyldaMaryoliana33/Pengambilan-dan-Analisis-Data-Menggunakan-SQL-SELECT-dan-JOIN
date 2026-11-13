@@ -1,0 +1,42 @@
+### SELECT
+# SELECT dipakai untuk menampilkan data dari tabel. Perintah ini hanya membaca data, jadi isi tabel tidak berubah.
+    SELECT nama_kolom
+    FROM nama_tabel
+    WHERE kondisi
+    ORDER BY nama_kolom ASC
+    LIMIT jumlah_data;
+
+# Kalau ingin menampilkan semua kolom, pakai tanda bintang (*):
+    SELECT * FROM program_studi;
+
+
+### Menyaring data
+# WHERE dipakai untuk memilih baris yang sesuai kondisi.
+    SELECT * FROM mahasiswa WHERE kode_prodi = 'TI';
+
+# Beberapa operator yang sering dipakai bersama WHERE:
+- AND: semua kondisi harus terpenuhi
+- OR: cukup salah satu kondisi terpenuhi
+- IN: cocok dengan salah satu nilai dalam daftar, misalnya kode_prodi IN ('TI', 'SI')
+- LIKE: mencari pola teks, tanda % mewakili karakter apa saja, misalnya LIKE '%mad%'
+- BETWEEN: nilai dalam rentang tertentu, batas bawah dan atas ikut dihitung
+
+
+### Mengurutkan dan membatasi
+# ORDER BY mengurutkan hasil (ASC naik, DESC turun), dan LIMIT membatasi jumlah baris yang ditampilkan.
+    SELECT nim, nilai_akhir
+    FROM nilai
+    ORDER BY nilai_akhir DESC
+    LIMIT 3;
+
+
+### Menghitung dan mengelompokkan
+# Fungsi hitung yang dipakai adalah COUNT(). COUNT(*) menghitung semua baris, sedangkan COUNT(kolom) tidak menghitung nilai NULL.
+# GROUP BY mengelompokkan data yang nilainya sama, dan HAVING dipakai untuk menyaring hasil kelompok tersebut.
+    SELECT kode_prodi, COUNT(*) AS jumlah_mahasiswa
+    FROM mahasiswa
+    GROUP BY kode_prodi
+    HAVING COUNT(*) > 1;
+
+# AS dipakai untuk memberi nama sementara (alias) pada kolom atau tabel, nama aslinya tidak berubah.
+# Perbedaan WHERE dan HAVING: WHERE menyaring baris sebelum dikelompokkan, sedangkan HAVING menyaring kelompok setelah GROUP BY.
