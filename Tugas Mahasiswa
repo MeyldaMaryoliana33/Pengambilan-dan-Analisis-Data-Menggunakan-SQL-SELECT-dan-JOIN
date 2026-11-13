@@ -1,0 +1,185 @@
+### (Sistem Informasi Akademik Kampus)
+### 1. Data program studi
+Menampilkan seluruh data program studi, lalu hanya kode dan namanya.
+
+    SELECT * FROM program_studi;
+
+    SELECT kode_prodi, nama_prodi
+    FROM program_studi;
+
+Query pertama menampilkan semua kolom dan baris tabel program_studi, sedangkan query kedua hanya menampilkan kode dan nama sehingga hasilnya lebih ringkas. Tabel ini berisi tiga program studi, yaitu MTK, SI, dan TI.
+
+
+### 2. Mengurutkan nama mahasiswa
+Menampilkan NIM, nama, dan angkatan, diurutkan berdasarkan nama.
+
+    SELECT nim, nama_mahasiswa, tahun_angkatan
+    FROM mahasiswa
+    ORDER BY nama_mahasiswa ASC;
+
+Ke-24 mahasiswa tampil berurutan dari A sampai Z (Ahmad Syahrul sampai Yoga Prasetyo), dan semuanya berasal dari angkatan 2025.
+
+
+### 3. Mencari nama dengan LIKE
+Mencari mahasiswa yang namanya mengandung kata mad.
+
+    SELECT nim, nama_mahasiswa
+    FROM mahasiswa
+    WHERE nama_mahasiswa LIKE '%mad%';
+
+Pola %mad% artinya teks mengandung mad di posisi mana pun, karena tanda % mewakili nol atau lebih karakter di kiri dan kanan. Hasilnya tiga mahasiswa: Muhammad Rizky Pratama, Lalu Fajar Ramadhan, dan Ahmad Syahrul.
+
+
+### 4. IN dan WHERE
+Menampilkan mahasiswa dari program studi TI dan SI.
+
+    SELECT nim, nama_mahasiswa, kode_prodi
+    FROM mahasiswa
+    WHERE kode_prodi IN ('TI', 'SI');
+
+Hasilnya 16 mahasiswa, 8 dari TI dan 8 dari SI. Saya memakai program studi karena semua mahasiswa berasal dari angkatan 2025.
+
+
+### 5. Dosen dengan AND dan OR
+Menampilkan dosen yang memenuhi dua kriteria sekaligus (AND), lalu yang memenuhi salah satu kriteria (OR).
+
+    -- AND: perempuan dan prodi TI
+    SELECT kode_induk_dosen, nama_dosen, jenis_kelamin, kode_prodi
+    FROM dosen
+    WHERE jenis_kelamin = 'P' AND kode_prodi = 'TI';
+
+    -- OR: perempuan atau prodi MTK
+    SELECT kode_induk_dosen, nama_dosen, jenis_kelamin, kode_prodi
+    FROM dosen
+    WHERE jenis_kelamin = 'P' OR kode_prodi = 'MTK';
+
+Dengan AND, dosen harus perempuan sekaligus dari prodi TI, sehingga hanya 2 dosen yang tampil (DSN002 dan DSN004). Dengan OR, cukup satu syarat terpenuhi, sehingga tampil 9 dosen.
+
+
+### 6. BETWEEN pada SKS
+Menampilkan mata kuliah dengan SKS antara 2 dan 3, diurutkan dari SKS terbesar.
+
+    SELECT kode_mk, nama_mk, jumlah_sks
+    FROM mata_kuliah
+    WHERE jumlah_sks BETWEEN 2 AND 3
+    ORDER BY jumlah_sks DESC;
+
+Seluruh 18 mata kuliah tampil karena semuanya bernilai 2 atau 3 SKS. Ada 15 mata kuliah 3 SKS di bagian atas, dan 3 mata kuliah 2 SKS (SI106, MT106, TI106) di bagian bawah.
+
+
+### 7. ORDER BY dan LIMIT
+Menampilkan lima kelas kuliah pertama.
+
+    SELECT kode_kelas, nama_kelas, tahun_ajaran
+    FROM kelas_kuliah
+    ORDER BY kode_kelas ASC
+    LIMIT 5;
+
+Hasilnya kelas KLS001 sampai KLS005 pada tahun ajaran 2026/2027. ORDER BY perlu dipakai bersama LIMIT supaya lima data yang diambil selalu sama.
+
+
+### 8. Jumlah mahasiswa per prodi
+Menghitung mahasiswa di setiap program studi.
+
+    SELECT kode_prodi, COUNT(*) AS jumlah_mahasiswa
+    FROM mahasiswa
+    GROUP BY kode_prodi;
+
+Setiap program studi (MTK, SI, dan TI) punya 8 mahasiswa, jadi totalnya 24 mahasiswa.
+
+
+### 9. Jumlah kelas per dosen
+Menghitung kelas kuliah yang diampu setiap dosen.
+
+    SELECT kode_induk_dosen, COUNT(*) AS jumlah_kelas
+    FROM kelas_kuliah
+    GROUP BY kode_induk_dosen;
+
+Dosen DSN001 sampai DSN015 masing-masing mengampu satu kelas, jadi beban mengajarnya sama rata.
+
+
+### 10. GROUP BY dan HAVING
+Menampilkan dosen wali yang membimbing lebih dari satu mahasiswa.
+
+    SELECT kode_induk_dosen, COUNT(*) AS jumlah_mahasiswa
+    FROM mahasiswa
+    GROUP BY kode_induk_dosen
+    HAVING COUNT(*) > 1;
+
+Ada 9 dosen wali yang masing-masing membimbing 2 mahasiswa. GROUP BY membuat kelompok per dosen, lalu HAVING memilih kelompok yang jumlahnya lebih dari satu.
+
+
+### 11. COUNT(*) dan COUNT(kolom)
+Membandingkan keduanya pada tabel nilai.
+
+    SELECT COUNT(*) AS jumlah_data,
+           COUNT(nilai_akhir) AS nilai_terisi
+    FROM nilai;
+
+Keduanya bernilai 12 karena semua nilai_akhir sudah terisi. COUNT(nilai_akhir) tidak menghitung NULL, jadi hasilnya baru berbeda kalau ada nilai yang kosong.
+
+
+### 12. Laporan nilai tertinggi
+Mengambil tiga nilai akhir tertinggi dari nilai 80 ke atas.
+
+    SELECT nim, nilai_akhir
+    FROM nilai
+    WHERE nilai_akhir >= 80
+    ORDER BY nilai_akhir DESC
+    LIMIT 3;
+
+Tiga nilai tertinggi dimiliki NIM 250306019 (89,90), 250306015 (87,90), dan 250306014 (87,80). Perubahan data di Modul 5 (UPDATE status mahasiswa, serta INSERT dan DELETE data percobaan) tidak mengubah tabel nilai. Tetapi kalau nilai_akhir di-UPDATE atau di-DELETE, hasil laporan ini ikut berubah.
+
+
+### 13. INNER JOIN mahasiswa dan program studi
+Menampilkan identitas mahasiswa beserta nama program studinya.
+
+    SELECT m.nim, m.nama_mahasiswa, p.nama_prodi
+    FROM mahasiswa AS m
+    INNER JOIN program_studi AS p
+      ON m.kode_prodi = p.kode_prodi;
+
+Nama program studi diambil dari tabel program_studi lewat kode_prodi (FK). Semua 24 mahasiswa tampil karena semuanya punya pasangan program studi.
+
+
+### 14. JOIN mata kuliah, kelas, dan dosen
+Menampilkan mata kuliah beserta kode kelas dan dosen pengampunya.
+
+    SELECT mk.kode_mk, mk.nama_mk, k.kode_kelas, d.nama_dosen
+    FROM kelas_kuliah AS k
+    INNER JOIN mata_kuliah AS mk ON k.kode_mk = mk.kode_mk
+    INNER JOIN dosen AS d
+      ON k.kode_induk_dosen = d.kode_induk_dosen;
+
+Hasilnya menunjukkan mata kuliah yang dibuka, kelasnya, dan dosen pengampunya. Hanya 15 mata kuliah yang tampil karena hanya itu yang sudah punya kelas, sedangkan SI106, MT106, dan TI106 tidak muncul.
+
+
+### 15. JOIN tiga tabel (KRS)
+Menampilkan daftar KRS beserta nama mahasiswa dan nama mata kuliah.
+
+    SELECT m.nim, m.nama_mahasiswa, mk.nama_mk
+    FROM krs AS r
+    INNER JOIN mahasiswa AS m ON r.nim = m.nim
+    INNER JOIN mata_kuliah AS mk ON r.kode_mk = mk.kode_mk;
+
+Tabel krs hanya menyimpan nim dan kode_mk. Dengan dua INNER JOIN, 24 baris KRS bisa ditampilkan lengkap dengan nama mahasiswa dan nama mata kuliahnya.
+
+
+### 16. LEFT JOIN untuk data tanpa pasangan
+Mencari program studi yang belum punya mahasiswa (a), dan kelas kuliah yang belum punya data KRS (b).
+
+    -- a. Program studi tanpa mahasiswa
+    SELECT p.kode_prodi, p.nama_prodi
+    FROM program_studi AS p
+    LEFT JOIN mahasiswa AS m
+      ON p.kode_prodi = m.kode_prodi
+    WHERE m.nim IS NULL;
+
+    -- b. Kelas kuliah tanpa data KRS
+    SELECT k.kode_kelas, k.nama_kelas
+    FROM kelas_kuliah AS k
+    LEFT JOIN krs AS r
+      ON k.kode_mk = r.kode_mk
+    WHERE r.nim IS NULL;
+
+LEFT JOIN mempertahankan semua data tabel kiri, dan baris yang tidak punya pasangan ditandai NULL di tabel kanan. Kedua hasilnya kosong, artinya setiap program studi sudah punya mahasiswa dan setiap kelas kuliah (lewat kode_mk) sudah punya data KRS.
